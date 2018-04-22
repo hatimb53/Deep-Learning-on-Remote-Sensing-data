@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+    <style>
+       #map {
+        height: 400px;
+        width: 80%;
+       }
+    </style>
+  </head>
+  <body>
+    <h3>My Google Maps Demo</h3>
+    <div id="map" style="width:100%,height:400px"></div>
+    <script>
+
+
+var heatmap={};
+var map={};
+  function initMap(lat= 12.9716,long=77.5946,zoom=13) {
+    
+   var banglore = {lat: lat, lng:long};
+   
+   
+         map = new google.maps.Map(document.getElementById('map'), {
+          zoom: zoom,
+          center: banglore,
+          mapTypeId: 'satellite',
+       
+
+        });
+
+
+}
+var data={};
+$(document).ready(function(){
+  
+       $("#loadjson").change(function(){
+     
+       initMap(map.getCenter().lat(),map.getCenter().lng(),map.getZoom());
+        $.ajax({url: "/loadjson?id="+this.value, success: function(data){
+          
+          
+          len=Object.keys(data["lat"]).length;
+          heatMapData=[];
+         for(i=0;i<parseInt(len);i++){
+          var s=""+i+"";
+          heatMapData.push( {location: new google.maps.LatLng(data['lat'][s], data["long"][s]), weight: 1});
+         
+         }
+       
+
+        heatmap = new google.maps.visualization.HeatmapLayer({
+        data:heatMapData,
+        radius: 20
+        
+        });
+
+        heatmap.setMap(map);
+          
+         }, error: function(xhr){
+        alert('Request Status: ' + xhr.status + ' Status Text: ' + xhr.statusText + ' ' + xhr.responseText);
+    }});
+     
+    });
+});
+</script>
+ 
+
+    <script 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDLO-Q_SGZ7XWB99B3P_Rq_uBlc96Qu9BA&libraries=visualization&callback=initMap">
+    async defer
+    </script>
+
+ <select id="loadjson" >
+   <option >select class</option>
+  <option value="0">lake</option>
+  <option value="1">airplane</option>
+  <option value="2">buildings</option>
+  <option value="3">chaparral</option>
+  <option value="4">forest</option>
+    <option value="5">overpass</option>
+      
+</select> 
+  </body>
+</html>
+
